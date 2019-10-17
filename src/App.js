@@ -1,6 +1,7 @@
 import React from 'react';
 import {Form, Select, Input, InputNumber, DatePicker, Switch, Slider, Button} from 'antd';
 import {Formik} from 'formik';
+import * as Yup from "yup";
 import './App.css';
 
 const {Option} = Select;
@@ -8,26 +9,27 @@ const {Option} = Select;
 const App = () => (
     <Formik
         initialValues={{
+            numberOfRockets: 3,
+            isAllowed: true,
             email: '',
             password: '',
-            minOfRockets: 1,
-            maxOfRockets: 10,
-            defaultValueOfRockets: 3,
-            numberOfRockets: 3,
-            isChecked: true,
             defaultFuelingPercentage: 80,
         }}
-        validate={values => {
-            let errors = {};
-            if (!values.email) {
-                errors.email = 'Обязательно';
-            } else if (
-                !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            ) {
-                errors.email = 'Почтовый адрес не распознан!';
-            }
-            return errors;
-        }}
+        validationSchema={Yup.object({
+            numberOfRockets: Yup.number()
+                .min(1, "Минимум одна ракета")
+                .max(10, "Максимум десять ракет")
+                .required("Required"),
+            isAllowed: Yup.boolean()
+                .required("Required")
+                .oneOf([true], "Не получится!"),
+            email: Yup.string()
+                .email("Это не похоже на e-mail адрес")
+                .required("Required"),
+            password: Yup.string()
+                .min(8, "Минимум 8 символов, попробуйте 11111111")
+                .required("Required"),
+        })}
         onSubmit={(values, {setSubmitting}) => {
             setTimeout(() => {
                 alert(JSON.stringify(values, null, 2));
@@ -50,10 +52,8 @@ const App = () => (
                     wrapperCol={{span: 8}}
                 >
                     <InputNumber
+                        type="number"
                         name="numberOfRockets"
-                        min={values.minOfRockets}
-                        max={values.maxOfRockets}
-                        defaultValue={values.defaultValueOfRockets}
                         value={values.numberOfRockets} //FIXME эта строка блокирует изменение количества, а без неё я не знаю как вернуть значение из формы ((
                     />
                     <span className="ant-form-text">или включить план</span>
@@ -66,7 +66,7 @@ const App = () => (
                     wrapperCol={{span: 8}}
                 >
                     <Switch defaultChecked
-                        checked={values.isChecked} //FIXME эта строка блокирует изменение флага, а без неё я не знаю как вернуть состояние флага
+                        checked={values.isAllowed} //FIXME эта строка блокирует изменение флага, а без неё я не знаю как вернуть состояние флага
                     />
                 </Form.Item>
 
