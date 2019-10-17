@@ -19,16 +19,16 @@ const App = () => (
             numberOfRockets: Yup.number()
                 .min(1, "Минимум одна ракета")
                 .max(10, "Максимум десять ракет")
-                .required("Required"),
+                .required("Не отказывайте себе в удовольствии!"),
             isAllowed: Yup.boolean()
-                .required("Required")
-                .oneOf([true], "Не получится!"),
+                .required("Ракеты должны улететь!")
+                .oneOf([true], "Отключить не получится!"),
             email: Yup.string()
                 .email("Это не похоже на e-mail адрес")
-                .required("Required"),
+                .required("Подсказка: president@usa.com"),
             password: Yup.string()
                 .min(8, "Минимум 8 символов, попробуйте 11111111")
-                .required("Required"),
+                .required("Подсказка: 11111111"),
         })}
         onSubmit={(values, {setSubmitting}) => {
             setTimeout(() => {
@@ -52,12 +52,14 @@ const App = () => (
                     wrapperCol={{span: 8}}
                 >
                     <InputNumber
-                        type="number"
                         name="numberOfRockets"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                         value={values.numberOfRockets} //FIXME эта строка блокирует изменение количества, а без неё я не знаю как вернуть значение из формы ((
                     />
-                    <span className="ant-form-text">или включить план</span>
-                    <a href="https://ant.design">Б</a>
+                    <span className="ant-form-text">или включить</span>
+                    <a href="https://ant.design">План Б</a>
+                    {errors.numberOfRockets && touched.numberOfRockets && errors.numberOfRockets}
                 </Form.Item>
 
                 <Form.Item
@@ -66,6 +68,8 @@ const App = () => (
                     wrapperCol={{span: 8}}
                 >
                     <Switch defaultChecked
+                        onChange={handleChange}
+                        onBlur={handleBlur}
                         checked={values.isAllowed} //FIXME эта строка блокирует изменение флага, а без неё я не знаю как вернуть состояние флага
                     />
                 </Form.Item>
